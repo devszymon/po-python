@@ -34,6 +34,21 @@ class AplikacjaSwiata:
             "Wilcze Jagody": WilczeJagody,
             "Barszcz Sosnowskiego": BarszczSosnowskiego,
         }
+        self.kolory_organizmow = {
+            Wilk: ("#b0bec5", "#000000"),
+            Owca: ("#ffffff", "#000000"),
+            Lis: ("#ffb74d", "#000000"),
+            Zolw: ("#a5d6a7", "#000000"),
+            Antylopa: ("#ffcc80", "#000000"),
+            CyberOwca: ("#90a4ae", "#ffffff"),
+            Czlowiek: ("#64b5f6", "#000000"),
+            Trawa: ("#81c784", "#000000"),
+            Mlecz: ("#fff176", "#000000"),
+            Guarana: ("#ef9a9a", "#000000"),
+            WilczeJagody: ("#8e24aa", "#ffffff"),
+            BarszczSosnowskiego: ("#2e7d32", "#ffffff"),
+        }
+        self.kolor_pustego_pola = ("#f5f5f5", "#616161")
         self.wybrany_typ = tk.StringVar(value="Wilk")
 
         self._zainicjalizuj_swiat()
@@ -60,7 +75,7 @@ class AplikacjaSwiata:
 
         self.etykieta_tury = tk.Label(panel, text="Tura: 0")
         self.etykieta_tury.pack(anchor="w")
-        self.etykieta_autora = tk.Label(panel, text="Autor: devszymon | Indeks: ---")
+        self.etykieta_autora = tk.Label(panel, text="Autor: Szymon Jankowski | Indeks: 208489")
         self.etykieta_autora.pack(anchor="w", pady=(0, 8))
 
         tk.Button(panel, text="Następna tura", command=self.wykonaj_ture).pack(fill="x")
@@ -150,7 +165,12 @@ class AplikacjaSwiata:
         for y in range(self.swiat.wysokosc):
             for x in range(self.swiat.szerokosc):
                 org = self.swiat.pobierz_organizm((x, y))
-                self.pola[y][x].config(text=org.znak() if org else ".")
+                if org:
+                    tlo, tekst = self.kolory_organizmow.get(type(org), ("#cfd8dc", "#000000"))
+                    self.pola[y][x].config(text=org.znak(), bg=tlo, fg=tekst)
+                else:
+                    tlo, tekst = self.kolor_pustego_pola
+                    self.pola[y][x].config(text=".", bg=tlo, fg=tekst)
 
         logi = self.swiat.pobierz_logi_i_wyczysc()
         if logi:
@@ -165,4 +185,3 @@ def uruchom_aplikacje():
     root = tk.Tk()
     AplikacjaSwiata(root)
     root.mainloop()
-
