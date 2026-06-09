@@ -1,4 +1,5 @@
 # swiat.py
+import json
 import random
 
 class Swiat:
@@ -16,6 +17,9 @@ class Swiat:
     @property
     def wysokosc(self): return self._wysokosc
 
+    @property
+    def tura(self): return self._tura
+
     def dodaj_log(self, komunikat: str):
         self._logi.append(komunikat)
 
@@ -30,6 +34,9 @@ class Swiat:
 
     def pobierz_organizm(self, pole: tuple):
         return self._plansza.get(pole)
+
+    def pobierz_organizmy(self):
+        return self._organizmy[:]
 
     def dodaj_organizm(self, organizm, pole: tuple):
         if self.czy_pole_na_planszy(pole) and pole not in self._plansza:
@@ -75,9 +82,75 @@ class Swiat:
         
         # Iterujemy po kopii, na wypadek gdyby organizmy zginęły w trakcie tury
         for org in self._organizmy[:]:
-            if org.zyje and org.wiek > 0:
+            if org.zyje:
                 org.akcja()
             org.wiek += 1
+
+    def zapisz_stan(self, sciezka: str):
+        dane = {
+            "szerokosc": self._szerokosc,
+            "wysokosc": self._wysokosc,
+            "tura": self._tura,
+            "organizmy": []
+        }
+
+        for org in self._organizmy:
+            if not org.zyje:
+                continue
+            dane["organizmy"].append({
+                "typ": org.__class__.__name__,
+                "x": org.polozenie[0],
+                "y": org.polozenie[1],
+                "sila": org.sila,
+                "wiek": org.wiek,
+                "dodatkowy_stan": org.stan_dodatkowy()
+            })
+
+        with open(sciezka, "w", encoding="utf-8") as plik:
+            json.dump(dane, plik, ensure_ascii=False, indent=2)
+
+        self.dodaj_log(f"Zapisano stan świata do pliku: {sciezka}")
+
+    def wczytaj_stan(self, sciezka: str):
+        from organizmy.zwierzeta import Wilk, Owca, Lis, Zolw, Antylopa, CyberOwca, Czlowiek
+        from organizmy.rosliny import Trawa, Mlecz, Guarana, WilczeJagody, BarszczSosnowskiego
+
+        klasy = {
+            "Wilk": Wilk,
+            "Owca": Owca,
+            "Lis": Lis,
+            "Zolw": Zolw,
+            "Antylopa": Antylopa,
+            "CyberOwca": CyberOwca,
+            "Czlowiek": Czlowiek,
+            "Trawa": Trawa,
+            "Mlecz": Mlecz,
+            "Guarana": Guarana,
+            "WilczeJagody": WilczeJagody,
+            "BarszczSosnowskiego": BarszczSosnowskiego,
+        }
+
+        with open(sciezka, "r", encoding="utf-8") as plik:
+            dane = json.load(plik)
+
+        self._szerokosc = dane["szerokosc"]
+        self._wysokosc = dane["wysokosc"]
+        self._tura = dane["tura"]
+        self._organizmy.clear()
+        self._plansza.clear()
+        self._logi.clear()
+
+        for wpis in dane["organizmy"]:
+            klasa = klasy.get(wpis["typ"])
+            if not klasa:
+                continue
+            organizm = klasa(self)
+            organizm.sila = wpis["sila"]
+            organizm.wiek = wpis["wiek"]
+            organizm.wczytaj_stan_dodatkowy(wpis.get("dodatkowy_stan", {}))
+            self.dodaj_organizm(organizm, (wpis["x"], wpis["y"]))
+
+        self.dodaj_log(f"Wczytano stan świata z pliku: {sciezka}")
 
     def rysuj_swiat(self):
         print(f"--- Tura {self._tura} ---")

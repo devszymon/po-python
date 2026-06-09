@@ -34,6 +34,8 @@ class Organizm(ABC):
     def czy_ucieka(self) -> bool: return False
     def czy_odporny_na_barszcz(self) -> bool: return False
     def wplyw_na_atakujacego(self, atakujacy): pass
+    def stan_dodatkowy(self) -> dict: return {}
+    def wczytaj_stan_dodatkowy(self, dane: dict): pass
 
 
 class Zwierze(Organizm):
@@ -73,8 +75,9 @@ class Zwierze(Organizm):
             wolne = self.swiat.znajdz_wolne_sasiednie(self.polozenie)
             if wolne:
                 self.swiat.dodaj_log(f"{self.nazwa()} ucieka przed {atakujacy.nazwa()}!")
+                poprzednie_pole_obroncy = self.polozenie
                 self.swiat.przesun_organizm(self, wolne)
-                self.swiat.przesun_organizm(atakujacy, self.polozenie)
+                self.swiat.przesun_organizm(atakujacy, poprzednie_pole_obroncy)
                 return
 
         # 4. Standardowa walka

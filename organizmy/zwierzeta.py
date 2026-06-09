@@ -1,7 +1,7 @@
 # organizmy/zwierzeta.py
 import random
 from .bazowe import Zwierze
-from umiejetnosci.calopalenie import Calopalenie
+from umiejetnosci.samopalenie import Calopalenie
 
 class Wilk(Zwierze):
     def __init__(self, swiat): super().__init__(9, 5, swiat)
@@ -50,7 +50,7 @@ class CyberOwca(Zwierze):
     def czy_odporny_na_barszcz(self): return True
     def akcja(self):
         from .rosliny import BarszczSosnowskiego
-        barszcze = [o for o in self.swiat._organizmy if isinstance(o, BarszczSosnowskiego) and o.zyje]
+        barszcze = [o for o in self.swiat.pobierz_organizmy() if isinstance(o, BarszczSosnowskiego) and o.zyje]
         
         if not barszcze:
             super().akcja() # Zachowuje się jak zwykła owca, jeśli brak celu
@@ -82,8 +82,6 @@ class Czlowiek(Zwierze):
             self.swiat.dodaj_log("Umiejętność ładuje się lub już trwa!")
 
     def akcja(self):
-        self.umiejetnosc.aktualizuj_stan()
-        
         if self.kierunek_ruchu:
             nx = self.polozenie[0] + self.kierunek_ruchu[0]
             ny = self.polozenie[1] + self.kierunek_ruchu[1]
@@ -96,3 +94,15 @@ class Czlowiek(Zwierze):
 
         # Po ruchu - rozpatrzenie palenia przestrzeni
         self.umiejetnosc.dzialanie(self.swiat)
+        self.umiejetnosc.aktualizuj_stan()
+
+    def stan_dodatkowy(self) -> dict:
+        return {
+            "kierunek_ruchu": list(self.kierunek_ruchu) if self.kierunek_ruchu else None,
+            "umiejetnosc": self.umiejetnosc.stan()
+        }
+
+    def wczytaj_stan_dodatkowy(self, dane: dict):
+        kierunek = dane.get("kierunek_ruchu")
+        self.kierunek_ruchu = tuple(kierunek) if kierunek else None
+        self.umiejetnosc.wczytaj_stan(dane.get("umiejetnosc", {}))

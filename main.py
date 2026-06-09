@@ -10,6 +10,7 @@ def wyczysc_ekran():
 
 def start_gry():
     swiat = Swiat(20, 20)
+    sciezka_zapisu = os.path.join(os.path.dirname(__file__), "zapis_swiata.json")
 
     # Inicjalizacja gracza
     gracz = Czlowiek(swiat)
@@ -35,7 +36,7 @@ def start_gry():
         for log in swiat.pobierz_logi_i_wyczysc():
             print(log)
 
-        print("\nSterowanie: W/A/S/D - ruch, P - Całopalenie, Spacja - pomiń, Q - wyjście")
+        print("\nSterowanie: W/A/S/D - ruch, P - Całopalenie, K - zapisz, L - wczytaj, Spacja - pomiń, Q - wyjście")
         akcja = input("Podaj akcję: ").strip().lower()
 
         if akcja == 'q':
@@ -50,6 +51,14 @@ def start_gry():
             gracz.kierunek_ruchu = (1, 0)
         elif akcja == 'p':
             gracz.aktywuj_umiejetnosc()
+        elif akcja == 'k':
+            swiat.zapisz_stan(sciezka_zapisu)
+        elif akcja == 'l':
+            try:
+                swiat.wczytaj_stan(sciezka_zapisu)
+                gracz = next((o for o in swiat.pobierz_organizmy() if isinstance(o, Czlowiek)), gracz)
+            except FileNotFoundError:
+                swiat.dodaj_log(f"Brak pliku zapisu: {sciezka_zapisu}")
 
         swiat.wykonaj_ture()
 

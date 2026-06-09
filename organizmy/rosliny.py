@@ -24,7 +24,7 @@ class WilczeJagody(Roslina):
     def __init__(self, swiat): super().__init__(99, swiat)
     def znak(self): return "j"
     def wplyw_na_atakujacego(self, atakujacy):
-        atakujacy.zyje = False
+        self.swiat.usun_organizm(atakujacy)
         self.swiat.dodaj_log(f"{atakujacy.nazwa()} ginie od Wilczych Jagód!")
 
 class BarszczSosnowskiego(Roslina):
@@ -44,5 +44,5 @@ class BarszczSosnowskiego(Roslina):
 
     def wplyw_na_atakujacego(self, atakujacy):
         if not atakujacy.czy_odporny_na_barszcz():
-            atakujacy.zyje = False
+            self.swiat.usun_organizm(atakujacy)
             self.swiat.dodaj_log(f"{atakujacy.nazwa()} ginie od zjedzenia Barszczu!")
