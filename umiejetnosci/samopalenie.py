@@ -22,6 +22,18 @@ class Calopalenie:
         elif self.cooldown > 0:
             self.cooldown -= 1
 
+    def stan(self) -> dict:
+        return {
+            "czy_aktywna": self.czy_aktywna,
+            "czas_trwania": self.czas_trwania,
+            "cooldown": self.cooldown,
+        }
+
+    def wczytaj_stan(self, dane: dict):
+        self.czy_aktywna = bool(dane.get("czy_aktywna", False))
+        self.czas_trwania = int(dane.get("czas_trwania", 0))
+        self.cooldown = int(dane.get("cooldown", 0))
+
     def dzialanie(self, swiat):
         if not self.czy_aktywna:
             return
