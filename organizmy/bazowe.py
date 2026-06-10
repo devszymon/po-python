@@ -1,4 +1,3 @@
-# organizmy/bazowe.py
 from abc import ABC, abstractmethod
 import random
 
@@ -29,7 +28,6 @@ class Organizm(ABC):
     def nazwa(self) -> str:
         return self.__class__.__name__
 
-    # --- Metody polimorficzne ułatwiające rozszerzenia (Żółw, Antylopa, Cyber-owca) ---
     def czy_odbija_atak(self, atakujacy) -> bool: return False
     def czy_ucieka(self) -> bool: return False
     def czy_odporny_na_barszcz(self) -> bool: return False
@@ -56,7 +54,6 @@ class Zwierze(Organizm):
             obronca.kolizja(self)
 
     def kolizja(self, atakujacy):
-        # 1. Rozmnażanie
         if type(self) == type(atakujacy):
             wolne = self.swiat.znajdz_wolne_sasiednie(self.polozenie)
             if wolne:
@@ -65,12 +62,10 @@ class Zwierze(Organizm):
                 self.swiat.dodaj_log(f"Rozmnażanie: Powstał nowy {self.nazwa()}")
             return
 
-        # 2. Specjalna obrona (np. Żółw)
         if self.czy_odbija_atak(atakujacy):
             self.swiat.dodaj_log(f"{self.nazwa()} odbija atak {atakujacy.nazwa()}!")
-            return # Atakujący pozostaje u siebie
+            return
 
-        # 3. Ucieczka (np. Antylopa)
         if self.czy_ucieka():
             wolne = self.swiat.znajdz_wolne_sasiednie(self.polozenie)
             if wolne:
@@ -80,7 +75,6 @@ class Zwierze(Organizm):
                 self.swiat.przesun_organizm(atakujacy, poprzednie_pole_obroncy)
                 return
 
-        # 4. Standardowa walka
         if atakujacy.sila >= self.sila:
             self.swiat.dodaj_log(f"{atakujacy.nazwa()} zabija {self.nazwa()}")
             self.swiat.usun_organizm(self)
@@ -106,10 +100,8 @@ class Roslina(Organizm):
     def kolizja(self, atakujacy):
         self.swiat.dodaj_log(f"{atakujacy.nazwa()} zjada {self.nazwa()}")
         self.wplyw_na_atakujacego(atakujacy)
-        
-        # Roślina znika po zjedzeniu
+
         self.swiat.usun_organizm(self)
-        
-        # Jeśli zjadający przetrwał (nie zjadł wilczych jagód), zajmuje miejsce
+
         if atakujacy.zyje:
             self.swiat.przesun_organizm(atakujacy, self.polozenie)
