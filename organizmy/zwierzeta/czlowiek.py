@@ -5,14 +5,22 @@ from umiejetnosci.samopalenie import Calopalenie
 class Czlowiek(Zwierze):
     def __init__(self, swiat):
         super().__init__(5, 4, swiat)
-        self.kierunek_ruchu = None
-        self.umiejetnosc = Calopalenie(self)
+        self._kierunek_ruchu = None
+        self._umiejetnosc = Calopalenie(self)
+
+    @property
+    def kierunek_ruchu(self):
+        return self._kierunek_ruchu
+
+    @kierunek_ruchu.setter
+    def kierunek_ruchu(self, wartosc):
+        self._kierunek_ruchu = wartosc
 
     def znak(self):
         return "H"
 
     def aktywuj_umiejetnosc(self):
-        if self.umiejetnosc.aktywuj():
+        if self._umiejetnosc.aktywuj():
             self.swiat.dodaj_log("Człowiek aktywował Całopalenie!")
         else:
             self.swiat.dodaj_log("Umiejętność ładuje się lub już trwa!")
@@ -28,17 +36,16 @@ class Czlowiek(Zwierze):
 
             self.kierunek_ruchu = None
 
-        self.umiejetnosc.dzialanie(self.swiat)
-        self.umiejetnosc.aktualizuj_stan()
+        self._umiejetnosc.dzialanie(self.swiat)
+        self._umiejetnosc.aktualizuj_stan()
 
     def stan_dodatkowy(self) -> dict:
         return {
             "kierunek_ruchu": list(self.kierunek_ruchu) if self.kierunek_ruchu else None,
-            "umiejetnosc": self.umiejetnosc.stan(),
+            "umiejetnosc": self._umiejetnosc.stan(),
         }
 
     def wczytaj_stan_dodatkowy(self, dane: dict):
         kierunek = dane.get("kierunek_ruchu")
         self.kierunek_ruchu = tuple(kierunek) if kierunek else None
-        self.umiejetnosc.wczytaj_stan(dane.get("umiejetnosc", {}))
-
+        self._umiejetnosc.wczytaj_stan(dane.get("umiejetnosc", {}))

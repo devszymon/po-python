@@ -4,17 +4,41 @@ import random
 class Organizm(ABC):
     def __init__(self, sila: int, inicjatywa: int, swiat):
         self._sila = sila
-        self.inicjatywa = inicjatywa
-        self.swiat = swiat
-        self.polozenie = (0, 0)
-        self.wiek = 0
-        self.zyje = True
+        self._inicjatywa = inicjatywa
+        self._swiat = swiat
+        self._polozenie = (0, 0)
+        self._wiek = 0
+        self._zyje = True
 
     @property
     def sila(self): return self._sila
 
     @sila.setter
     def sila(self, wartosc): self._sila = wartosc
+
+    @property
+    def inicjatywa(self): return self._inicjatywa
+
+    @property
+    def swiat(self): return self._swiat
+
+    @property
+    def polozenie(self): return self._polozenie
+
+    @polozenie.setter
+    def polozenie(self, wartosc): self._polozenie = wartosc
+
+    @property
+    def wiek(self): return self._wiek
+
+    @wiek.setter
+    def wiek(self, wartosc): self._wiek = wartosc
+
+    @property
+    def zyje(self): return self._zyje
+
+    @zyje.setter
+    def zyje(self, wartosc): self._zyje = wartosc
 
     @abstractmethod
     def akcja(self): pass
