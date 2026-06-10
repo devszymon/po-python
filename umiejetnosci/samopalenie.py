@@ -1,4 +1,3 @@
-# umiejetnosci/calopalenie.py
 class Calopalenie:
     def __init__(self, wlasciciel):
         self.wlasciciel = wlasciciel

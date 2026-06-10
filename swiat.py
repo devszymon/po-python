@@ -1,4 +1,3 @@
-# swiat.py
 import json
 import random
 
@@ -77,10 +76,8 @@ class Swiat:
 
     def wykonaj_ture(self):
         self._tura += 1
-        # Sortowanie wedle priorytetów: inicjatywa (malejąco), potem wiek (malejąco)
         self._organizmy.sort(key=lambda o: (o.inicjatywa, o.wiek), reverse=True)
-        
-        # Iterujemy po kopii, na wypadek gdyby organizmy zginęły w trakcie tury
+
         for org in self._organizmy[:]:
             if org.zyje:
                 org.akcja()
